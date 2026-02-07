@@ -1,11 +1,14 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SCENARIOS } from './constants';
 import { Scenario, ScenarioType } from './types';
 import ScenarioCard from './components/ScenarioCard';
 import ImageResult from './components/ImageResult';
 import ImageUploader from './components/ImageUploader';
 import AdBanner from './components/AdBanner';
+import CommunityFeed from './components/CommunityFeed';
 import { generateImages } from './services/geminiService';
+import { db } from './lib/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 const App: React.FC = () => {
   const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
@@ -13,6 +16,24 @@ const App: React.FC = () => {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const saveToShowcase = async (imageUrl: string, scenario: Scenario) => {
+    try {
+      // Note: If this fails, check your Firestore rules (e.g., allow write: if true;)
+      await addDoc(collection(db, "showcase"), {
+        imageUrl,
+        scenarioName: scenario.name,
+        scenarioIcon: scenario.icon,
+        timestamp: serverTimestamp(),
+      });
+    } catch (e: any) {
+      if (e.code === 'permission-denied') {
+        console.warn("Could not save to community showcase: Permission Denied. Check Firestore Rules.");
+      } else {
+        console.error("Error saving to showcase: ", e);
+      }
+    }
+  };
 
   const handleScenarioSelect = async (scenario: Scenario) => {
     setSelectedScenario(scenario);
@@ -23,7 +44,13 @@ const App: React.FC = () => {
     try {
       const result = await generateImages(scenario.basePrompt, uploadedImage);
       setImages(result);
-    } catch (err) {
+      
+      // Save results to community showcase (non-blocking)
+      if (result.length > 0) {
+        saveToShowcase(result[0], scenario);
+      }
+    } catch (err: any) {
+      console.error("Generation error:", err);
       setError("Something went wrong while generating. Please try again.");
       setSelectedScenario(null);
     } finally {
@@ -39,6 +66,9 @@ const App: React.FC = () => {
     try {
       const result = await generateImages(selectedScenario.basePrompt, uploadedImage);
       setImages(result);
+      if (result.length > 0) {
+        saveToShowcase(result[0], selectedScenario);
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       setError("Generation failed. Please try again.");
@@ -71,7 +101,7 @@ const App: React.FC = () => {
 
       {/* Top Ad Unit */}
       <div className="max-w-4xl mx-auto mb-8">
-        <AdBanner slot="8273645102" /> {/* Example Slot ID */}
+        <AdBanner slot="8273645102" />
       </div>
 
       {/* Main Content */}
@@ -96,6 +126,11 @@ const App: React.FC = () => {
                 />
               ))}
             </div>
+
+            {/* Community Feed - Only show on home */}
+            <div className="mt-20">
+              <CommunityFeed />
+            </div>
           </>
         ) : (
           <ImageResult 
@@ -110,7 +145,7 @@ const App: React.FC = () => {
         {isLoading && !images.length && (
           <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
             <div className="w-16 h-16 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-8" />
-            <h2 className="text-2xl font-bold mb-2">Generating Masterpiece...</h2>
+            <h2 className="text-2xl font-bold mb-2 text-white">Generating Masterpiece...</h2>
             <p className="text-neutral-400 max-w-xs">
               Our AI is crafting {selectedScenario?.name} variations {uploadedImage ? "based on your photo" : ""} with pixel-perfect detail.
             </p>
