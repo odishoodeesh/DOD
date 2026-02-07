@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { SCENARIOS } from './constants';
 import { Scenario, ScenarioType } from './types';
@@ -52,7 +51,6 @@ const App: React.FC = () => {
     setSelectedScenario(null);
     setImages([]);
     setError(null);
-    // Note: We don't automatically clear the uploaded image so user can try multiple styles
   };
 
   return (
@@ -103,7 +101,7 @@ const App: React.FC = () => {
           />
         )}
 
-        {/* Global Loading Overlay (When selecting first time) */}
+        {/* Global Loading Overlay */}
         {isLoading && !images.length && (
           <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
             <div className="w-16 h-16 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-8" />
@@ -126,12 +124,14 @@ const App: React.FC = () => {
         )}
       </main>
 
-      {/* Footer */}
-      {!isLoading && !selectedScenario && (
-        <footer className="mt-24 text-center text-neutral-600">
-          <p className="text-sm">Powered by Gemini &mdash; High-Realism Generation Engine</p>
-        </footer>
-      )}
+      {/* Footer / Ad Space */}
+      <footer className="mt-24 text-center text-neutral-600 space-y-4">
+        <div className="min-h-[90px] w-full flex items-center justify-center border-t border-neutral-900 pt-8">
+           {/* Placeholder for Auto-Ads */}
+           <p className="text-xs uppercase tracking-widest opacity-20">Sponsored Content</p>
+        </div>
+        <p className="text-sm">Powered by Gemini &mdash; High-Realism Generation Engine</p>
+      </footer>
     </div>
   );
 };
