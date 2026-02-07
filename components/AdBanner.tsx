@@ -1,3 +1,6 @@
+
+'use client';
+
 import React, { useEffect } from 'react';
 
 declare global {
@@ -21,7 +24,6 @@ const AdBanner: React.FC<AdBannerProps> = ({
 }) => {
   useEffect(() => {
     try {
-      // Small timeout to ensure the DOM is ready and adsbygoogle script is loaded
       const timer = setTimeout(() => {
         if (typeof window !== 'undefined' && window.adsbygoogle) {
           (window.adsbygoogle = window.adsbygoogle || []).push({});
