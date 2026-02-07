@@ -4,6 +4,7 @@ import { Scenario, ScenarioType } from './types';
 import ScenarioCard from './components/ScenarioCard';
 import ImageResult from './components/ImageResult';
 import ImageUploader from './components/ImageUploader';
+import AdBanner from './components/AdBanner';
 import { generateImages } from './services/geminiService';
 
 const App: React.FC = () => {
@@ -17,7 +18,7 @@ const App: React.FC = () => {
     setSelectedScenario(scenario);
     setError(null);
     setIsLoading(true);
-    setImages([]); // Clear previous images on first select
+    setImages([]); 
 
     try {
       const result = await generateImages(scenario.basePrompt, uploadedImage);
@@ -38,7 +39,6 @@ const App: React.FC = () => {
     try {
       const result = await generateImages(selectedScenario.basePrompt, uploadedImage);
       setImages(result);
-      // Scroll to top of results
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       setError("Generation failed. Please try again.");
@@ -56,7 +56,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-black text-white px-4 py-12 md:px-8">
       {/* Header */}
-      <header className="max-w-7xl mx-auto text-center mb-12">
+      <header className="max-w-7xl mx-auto text-center mb-8">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-semibold mb-6">
           <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
           Zero Prompt Experience
@@ -68,6 +68,11 @@ const App: React.FC = () => {
           The ultimate AI image generator. Select a style, get 2 hyper-realistic masterpieces instantly.
         </p>
       </header>
+
+      {/* Top Ad Unit */}
+      <div className="max-w-4xl mx-auto mb-8">
+        <AdBanner slot="8273645102" /> {/* Example Slot ID */}
+      </div>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto">
@@ -113,25 +118,29 @@ const App: React.FC = () => {
             <div className="mt-12 w-full max-w-md bg-neutral-900 rounded-full h-1.5 overflow-hidden">
               <div className="h-full bg-blue-500 animate-[loading_3s_ease-in-out_infinite]" />
             </div>
-            <style>{`
-              @keyframes loading {
-                0% { width: 0%; transform: translateX(-100%); }
-                50% { width: 70%; transform: translateX(0%); }
-                100% { width: 100%; transform: translateX(100%); }
-              }
-            `}</style>
           </div>
         )}
       </main>
 
-      {/* Footer / Ad Space */}
-      <footer className="mt-24 text-center text-neutral-600 space-y-4">
-        <div className="min-h-[90px] w-full flex items-center justify-center border-t border-neutral-900 pt-8">
-           {/* Placeholder for Auto-Ads */}
-           <p className="text-xs uppercase tracking-widest opacity-20">Sponsored Content</p>
+      {/* Bottom Ad Unit */}
+      <div className="max-w-4xl mx-auto mt-12">
+        <AdBanner slot="9182736450" />
+      </div>
+
+      {/* Footer */}
+      <footer className="mt-12 text-center text-neutral-600 space-y-4 pb-12">
+        <div className="w-full border-t border-neutral-900 pt-8">
+          <p className="text-sm">Powered by Gemini &mdash; High-Realism Generation Engine</p>
         </div>
-        <p className="text-sm">Powered by Gemini &mdash; High-Realism Generation Engine</p>
       </footer>
+
+      <style>{`
+        @keyframes loading {
+          0% { width: 0%; transform: translateX(-100%); }
+          50% { width: 70%; transform: translateX(0%); }
+          100% { width: 100%; transform: translateX(100%); }
+        }
+      `}</style>
     </div>
   );
 };

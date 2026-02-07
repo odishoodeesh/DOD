@@ -14,7 +14,6 @@ export default defineConfig({
       transformMixedEsModules: true,
     }
   },
-  publicDir: '.', // Ensures ads.txt in the root is copied to dist
   server: {
     port: 3000,
   }
