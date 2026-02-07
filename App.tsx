@@ -5,6 +5,7 @@ import ScenarioCard from './components/ScenarioCard';
 import ImageResult from './components/ImageResult';
 import ImageUploader from './components/ImageUploader';
 import { generateImages } from './services/geminiService';
+import { Analytics } from '@vercel/analytics/react';
 
 const App: React.FC = () => {
   const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
@@ -55,6 +56,7 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black text-white px-4 py-12 md:px-8">
+      <Analytics />
       {/* Header */}
       <header className="max-w-7xl mx-auto text-center mb-12">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-semibold mb-6">
